@@ -119,9 +119,9 @@ export default function Dashboard() {
     "#3b82f6", // Food
     "#f97316", // Rent
     "#10b981", // Utilities
-    "#f43f5e", // Travel
+    "#FFC0CB", // Travel
     "#8b5cf6", // Shopping
-    "#14b8a6", // Entertainment
+    "#f43f5e", // Entertainment
     "#64748b", // Other
   ];
 
@@ -142,7 +142,7 @@ export default function Dashboard() {
       <AppBar position="static" className="dashboard-appbar" elevation={0}>
         <Toolbar>
           <Typography variant="h6" className="logo">
-            Roommate Split 💸
+            RoomExpense Split
           </Typography>
           <Box className="header-buttons">
             <Button
@@ -221,6 +221,7 @@ export default function Dashboard() {
                       onChange={(e) => setCategoryFilter(e.target.value)}
                       InputLabelProps={{ shrink: true }}
                       fullWidth
+
                     >
                       <option value="">All</option>
                       <option value="Food">🍔 Food</option>
@@ -351,13 +352,11 @@ export default function Dashboard() {
                           nameKey="name"
                           cx="50%"
                           cy="50%"
-                          innerRadius={60}   // donut style
+                          innerRadius={60}   // donut
                           outerRadius={100}
-                          paddingAngle={4}   // spacing between slices
-                          cornerRadius={6}   // rounded edges
-                          label={({ name, percent }) =>
-                            `${name} ${(percent * 100).toFixed(0)}%`
-                          }
+                          paddingAngle={4}
+                          cornerRadius={6}
+                          label={false}      // ❌ disables arrows + labels
                         >
                           {pieData.map((entry, index) => (
                             <Cell
@@ -368,22 +367,34 @@ export default function Dashboard() {
                             />
                           ))}
                         </Pie>
+
+                        {/* Tooltip on hover */}
                         <Tooltip
                           contentStyle={{
                             backgroundColor: "#fff",
                             borderRadius: "8px",
                             boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
                           }}
-                          formatter={(value, name) => [`₹${value}`, name]}
+                          formatter={(value, name, props) => [
+                            `₹${value}`,
+                            `${name} (${((props.payload.value / pieData.reduce((a, b) => a + b.value, 0)) * 100).toFixed(0)}%)`
+                          ]}
                         />
+
+                        {/* Legend shows name + % */}
                         <Legend
                           verticalAlign="bottom"
                           align="center"
                           iconType="circle"
-                          wrapperStyle={{ paddingTop: 10 }}
+                          formatter={(value, entry) => {
+                            const total = pieData.reduce((a, b) => a + b.value, 0);
+                            const percent = ((entry.payload.value / total) * 100).toFixed(0);
+                            return `${value} ${percent}%`;
+                          }}
                         />
                       </PieChart>
                     </ResponsiveContainer>
+
                   ) : (
                     <Typography
                       color="text.secondary"
