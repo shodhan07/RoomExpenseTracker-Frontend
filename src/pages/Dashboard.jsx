@@ -23,6 +23,14 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import api from "../api";
 import { clearToken } from "../auth";
 import dayjs from "dayjs";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import "./Dashboard.css";
 
 export default function Dashboard() {
@@ -36,6 +44,7 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [dlg, setDlg] = useState(false);
   const [joinId, setJoinId] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState(""); // NEW
   const [expenseForm, setExpenseForm] = useState({
     amount: "",
     description: "",
@@ -105,6 +114,28 @@ export default function Dashboard() {
     await loadData();
   };
 
+  // ================= Pie Chart Data =================
+  const COLORS = [
+    "#3b82f6", // Food
+    "#f97316", // Rent
+    "#10b981", // Utilities
+    "#f43f5e", // Travel
+    "#8b5cf6", // Shopping
+    "#14b8a6", // Entertainment
+    "#64748b", // Other
+  ];
+
+  const categoryTotals = expenses.reduce((acc, e) => {
+    const cat = e.category || "Other";
+    acc[cat] = (acc[cat] || 0) + Number(e.amount);
+    return acc;
+  }, {});
+
+  const pieData = Object.entries(categoryTotals).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
   return (
     <Box className="dashboard-container">
       {/* Header */}
@@ -144,7 +175,7 @@ export default function Dashboard() {
         )}
         <Grid container spacing={3}>
           {/* Expenses */}
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={7}>
             <Card className="card-section">
               <CardContent>
                 <Box className="filters-bar">
@@ -181,6 +212,26 @@ export default function Dashboard() {
                       value={year}
                       onChange={(e) => setYear(Number(e.target.value))}
                     />
+                    {/* Category Filter */}
+                    <TextField
+                      select
+                      SelectProps={{ native: true }}
+                      label="Category"
+                      value={categoryFilter}
+                      onChange={(e) => setCategoryFilter(e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      fullWidth
+                    >
+                      <option value="">All</option>
+                      <option value="Food">🍔 Food</option>
+                      <option value="Rent">🏠 Rent</option>
+                      <option value="Utilities">💡 Utilities</option>
+                      <option value="Travel">✈️ Travel</option>
+                      <option value="Shopping">🛍️ Shopping</option>
+                      <option value="Entertainment">🎬 Entertainment</option>
+                      <option value="Other">🔖 Other</option>
+                    </TextField>
+
                   </Box>
                   <Button
                     variant="contained"
@@ -195,29 +246,31 @@ export default function Dashboard() {
                   Expenses
                 </Typography>
                 <Box className="expense-list">
-                  {expenses.map((e) => (
-                    <Box key={e.id} className="expense-item">
-                      <Box>
-                        <Typography className="expense-title">
-                          {e.description || "Expense"}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          className="expense-subtitle"
-                        >
-                          {e.category || "General"} •{" "}
-                          {new Date(e.date).toLocaleDateString()} • Paid by{" "}
-                          {e.payer_name}
-                        </Typography>
+                  {expenses
+                    .filter((e) => !categoryFilter || e.category === categoryFilter)
+                    .map((e) => (
+                      <Box key={e.id} className="expense-item">
+                        <Box>
+                          <Typography className="expense-title">
+                            {e.description || "Expense"}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            className="expense-subtitle"
+                          >
+                            {e.category || "General"} •{" "}
+                            {new Date(e.date).toLocaleDateString()} • Paid by{" "}
+                            {e.payer_name}
+                          </Typography>
+                        </Box>
+                        <Chip
+                          label={`₹ ${Number(e.amount).toFixed(2)}`}
+                          color="primary"
+                          variant="outlined"
+                        />
                       </Box>
-                      <Chip
-                        label={`₹ ${Number(e.amount).toFixed(2)}`}
-                        color="primary"
-                        variant="outlined"
-                      />
-                    </Box>
-                  ))}
+                    ))}
                   {!expenses.length && (
                     <Typography color="text.secondary">
                       No expenses yet.
@@ -229,8 +282,7 @@ export default function Dashboard() {
           </Grid>
 
           {/* Summary */}
-          {/* Summary */}
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={5}>
             <Card className="card-section">
               <CardContent>
                 <Typography variant="h6" gutterBottom>
@@ -241,16 +293,21 @@ export default function Dashboard() {
                   {balances.map((b) => (
                     <Box key={b.user.id} className="summary-item">
                       <Box>
-                        <Typography className="summary-name">{b.user.name}</Typography>
+                        <Typography className="summary-name">
+                          {b.user.name}
+                        </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Paid: ₹ {b.totalPaid?.toFixed(2) || 0}
                         </Typography>
                       </Box>
                       <Box textAlign="right">
                         <Typography
-                          className={b.net >= 0 ? "summary-positive" : "summary-negative"}
+                          className={
+                            b.net >= 0 ? "summary-positive" : "summary-negative"
+                          }
                         >
-                          {b.net >= 0 ? "Gets back" : "Owes"} ₹ {Math.abs(b.net).toFixed(2)}
+                          {b.net >= 0 ? "Gets back" : "Owes"} ₹{" "}
+                          {Math.abs(b.net).toFixed(2)}
                         </Typography>
                       </Box>
                     </Box>
@@ -264,7 +321,8 @@ export default function Dashboard() {
                   {settlements.map((s, idx) => (
                     <Box key={idx} className="settle-item">
                       <Typography variant="body2">
-                        💸 {s.from.name} should pay ₹ {s.amount.toFixed(2)} to {s.to.name}
+                        💸 {s.from.name} should pay ₹ {s.amount.toFixed(2)} to{" "}
+                        {s.to.name}
                       </Typography>
                     </Box>
                   ))}
@@ -278,10 +336,69 @@ export default function Dashboard() {
                     </Typography>
                   )}
                 </Box>
+
+                {/* Pie Chart Breakdown */}
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Expense Breakdown
+                  </Typography>
+                  {pieData.length ? (
+                    <ResponsiveContainer width="100%" height={400}>
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}   // donut style
+                          outerRadius={100}
+                          paddingAngle={4}   // spacing between slices
+                          cornerRadius={6}   // rounded edges
+                          label={({ name, percent }) =>
+                            `${name} ${(percent * 100).toFixed(0)}%`
+                          }
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                              stroke="#fff"
+                              strokeWidth={2}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "#fff",
+                            borderRadius: "8px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                          }}
+                          formatter={(value, name) => [`₹${value}`, name]}
+                        />
+                        <Legend
+                          verticalAlign="bottom"
+                          align="center"
+                          iconType="circle"
+                          wrapperStyle={{ paddingTop: 10 }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Typography
+                      color="text.secondary"
+                      variant="body2"
+                      sx={{ mt: 1 }}
+                    >
+                      No data to show 📊
+                    </Typography>
+                  )}
+                </Box>
+
+
               </CardContent>
             </Card>
           </Grid>
-
         </Grid>
       </Container>
 
@@ -353,15 +470,29 @@ export default function Dashboard() {
                 }
                 sx={{ my: 1 }}
               />
+
+              {/* Category Dropdown */}
               <TextField
                 fullWidth
+                select
                 label="Category"
                 value={expenseForm.category}
                 onChange={(e) =>
                   setExpenseForm((f) => ({ ...f, category: e.target.value }))
                 }
                 sx={{ my: 1 }}
-              />
+                SelectProps={{ native: true }}
+                InputLabelProps={{ shrink: true }}
+              >
+                <option value="">Select category</option>
+                <option value="Food">🍔 Food</option>
+                <option value="Rent">🏠 Rent</option>
+                <option value="Utilities">💡 Utilities</option>
+                <option value="Travel">✈️ Travel</option>
+                <option value="Shopping">🛍️ Shopping</option>
+                <option value="Entertainment">🎬 Entertainment</option>
+                <option value="Other">🔖 Other</option>
+              </TextField>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setDlg(false)}>Cancel</Button>

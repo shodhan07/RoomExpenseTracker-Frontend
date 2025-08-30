@@ -1,48 +1,77 @@
+/* ===== Dashboard Premium UI ===== */
+
 /* Background */
 .dashboard-container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f9fbff 0%, #ffffff 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
   font-family: "Inter", sans-serif;
+  color: #1e293b;
 }
 
 /* Header */
 .dashboard-appbar {
-  backdrop-filter: saturate(180%) blur(10px) !important;
-  background: rgba(255, 255, 255, 0.85) !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+  backdrop-filter: blur(12px) saturate(180%) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
 }
 
 .logo {
   flex-grow: 1;
   font-weight: 700 !important;
-  color: #1f2937;
+  font-size: 1.4rem !important;
+  color: #0f172a !important;
+  letter-spacing: -0.5px;
 }
 
 .header-buttons button {
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   font-weight: 600 !important;
+  padding: 6px 14px !important;
+  text-transform: none !important;
+  transition: all 0.2s ease;
+}
+
+.header-buttons button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .logout-btn {
-  margin-left: 12px !important;
+  margin-left: 14px !important;
   color: #ef4444 !important;
+  transition: transform 0.2s ease;
+}
+
+.logout-btn:hover {
+  transform: rotate(-15deg);
 }
 
 /* Content */
 .dashboard-content {
-  padding: 32px 0;
+  padding: 36px 0;
 }
 
 /* Cards */
 .card-section {
-  border-radius: 16px !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 18px !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06) !important;
+  background: linear-gradient(145deg, #ffffff, #f9fafb);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-section h6 {
+  font-weight: 700 !important;
+  font-size: 1.15rem !important;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Filters */
@@ -58,18 +87,32 @@
   gap: 16px;
 }
 
+.filters .MuiTextField-root {
+  min-width: 120px;
+}
+
 /* Expenses */
 .expense-list {
   border-top: 1px solid #f1f5f9;
-  margin-top: 8px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .expense-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid #f3f4f6;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #f9fafb;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.expense-item:hover {
+  background: #f1f5f9;
+  transform: scale(1.01);
 }
 
 .expense-title {
@@ -82,22 +125,37 @@
   color: #6b7280 !important;
 }
 
+.expense-item .MuiChip-root {
+  font-weight: 600;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.1);
+}
+
 /* Summary */
 .summary-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  margin-top: 12px;
 }
 
 .summary-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f9fafb;
+  transition: background 0.2s ease;
+}
+
+.summary-item:hover {
+  background: #f1f5f9;
 }
 
 .summary-name {
   font-weight: 600 !important;
-  color: #374151;
+  color: #1e293b;
 }
 
 .summary-positive {
@@ -118,13 +176,32 @@
 }
 
 .settle-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* Dialogs */
+.MuiDialog-paper {
+  border-radius: 18px !important;
+  padding: 8px;
+}
+
+.MuiDialogTitle-root {
+  font-weight: 700 !important;
+  font-size: 1.2rem !important;
+}
+
+.MuiDialogActions-root button {
+  border-radius: 10px !important;
+  text-transform: none !important;
 }
 
 /* Alerts */
 .error-alert {
-  margin-bottom: 20px !important;
+  margin-bottom: 22px !important;
+  border-radius: 10px !important;
 }
