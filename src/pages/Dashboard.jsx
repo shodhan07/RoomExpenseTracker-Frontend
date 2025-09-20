@@ -65,10 +65,25 @@ export default function Dashboard() {
       }),
       api.get("/summary", { params: { household_id: selected, month, year } }),
     ]);
+
     setExpenses(ex.data);
-    setBalances(sum.data.balances);
+
+    // 🔹 Calculate how much each user paid (using paid_by column)
+    const paidMap = ex.data.reduce((acc, e) => {
+      acc[e.paid_by] = (acc[e.paid_by] || 0) + Number(e.amount);
+      return acc;
+    }, {});
+
+    // 🔹 Merge totalPaid into balances
+    const mergedBalances = sum.data.balances.map((b) => ({
+      ...b,
+      totalPaid: paidMap[b.user.id] || 0,  // match by user.id
+    }));
+
+    setBalances(mergedBalances);
     setSettlements(sum.data.settlements);
   };
+
 
   useEffect(() => {
     loadHouseholds();
@@ -119,7 +134,7 @@ export default function Dashboard() {
     "#3b82f6", // Food
     "#f97316", // Rent
     "#10b981", // Utilities
-    "#FFC0CB", // Travel
+    "#000000", // Travel
     "#8b5cf6", // Shopping
     "#f43f5e", // Entertainment
     "#64748b", // Other
@@ -142,7 +157,7 @@ export default function Dashboard() {
       <AppBar position="static" className="dashboard-appbar" elevation={0}>
         <Toolbar>
           <Typography variant="h6" className="logo">
-            RoomExpense Split
+            RoomExpense <span className="Tracker">Tracker</span>
           </Typography>
           <Box className="header-buttons">
             <Button
@@ -322,7 +337,7 @@ export default function Dashboard() {
                   {settlements.map((s, idx) => (
                     <Box key={idx} className="settle-item">
                       <Typography variant="body2">
-                        💸 {s.from.name} should pay ₹ {s.amount.toFixed(2)} to{" "}
+                        {s.from.name} should pay ₹ {s.amount.toFixed(2)} to{" "}
                         {s.to.name}
                       </Typography>
                     </Box>
@@ -333,7 +348,7 @@ export default function Dashboard() {
                       variant="body2"
                       sx={{ mt: 1 }}
                     >
-                      All settled 🎉
+                      All settled
                     </Typography>
                   )}
                 </Box>
