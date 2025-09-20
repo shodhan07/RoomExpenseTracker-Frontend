@@ -2,8 +2,8 @@ import axios from "axios";
 import { getToken } from "./auth";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000/api",
-  withCredentials: true, // ✅ important for cross-origin cookies/sessions
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000/api", // ✅ include /api
+  withCredentials: true, // important for cross-origin cookies/sessions
 });
 
 // Add Authorization header if token exists
