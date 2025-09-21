@@ -1,11 +1,22 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, Card, CardContent, TextField, Alert, Link, AppBar, Toolbar } from "@mui/material";
+import {
+    Box,
+    Button,
+    Typography,
+    Card,
+    CardContent,
+    TextField,
+    Alert,
+    Link,
+    AppBar,
+    Toolbar
+} from "@mui/material";
 import { setToken } from "../auth";
 import api from "../api";
 import "./AuthLanding.css";
 
 export default function AuthLanding() {
-    const [activeTab, setActiveTab] = useState(""); // "" means landing page only
+    const [activeTab, setActiveTab] = useState(""); // "" = landing only
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [registerName, setRegisterName] = useState("");
@@ -17,7 +28,10 @@ export default function AuthLanding() {
         e.preventDefault();
         setError("");
         try {
-            const { data } = await api.post("/auth/login", { email: loginEmail, password: loginPassword });
+            const { data } = await api.post("/auth/login", {
+                email: loginEmail,
+                password: loginPassword,
+            });
             setToken(data.token);
             window.location.href = "/";
         } catch (err) {
@@ -29,7 +43,11 @@ export default function AuthLanding() {
         e.preventDefault();
         setError("");
         try {
-            const { data } = await api.post("/auth/register", { name: registerName, email: registerEmail, password: registerPassword });
+            const { data } = await api.post("/auth/register", {
+                name: registerName,
+                email: registerEmail,
+                password: registerPassword,
+            });
             setToken(data.token);
             window.location.href = "/";
         } catch (err) {
@@ -65,7 +83,6 @@ export default function AuthLanding() {
             {/* MAIN */}
             <Box className="auth-landing-main">
                 {/* Left column: Landing text */}
-                {/* Left column: Landing text with modern cards */}
                 <Box className="landing-left">
                     <Typography variant="h3" className="landing-title">
                         Track & Split Expenses Easily
@@ -103,8 +120,7 @@ export default function AuthLanding() {
                     </Button>
                 </Box>
 
-
-                {/* Right column: Card (only show if activeTab) */}
+                {/* Right column: Card (login/register) */}
                 <Box className="landing-right">
                     {activeTab && (
                         <>
@@ -115,8 +131,10 @@ export default function AuthLanding() {
                                         <Typography className="auth-subtitle">Log in to manage your expenses.</Typography>
                                         {error && <Alert severity="error" className="auth-error">{error}</Alert>}
                                         <Box component="form" onSubmit={handleLogin}>
-                                            <TextField fullWidth label="Email" type="email" margin="normal" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
-                                            <TextField fullWidth label="Password" type="password" margin="normal" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
+                                            <TextField fullWidth label="Email" type="email" margin="normal"
+                                                value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
+                                            <TextField fullWidth label="Password" type="password" margin="normal"
+                                                value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
                                             <Button fullWidth type="submit" className="auth-button">Log In</Button>
                                         </Box>
                                         <Typography className="auth-footer">
@@ -131,9 +149,12 @@ export default function AuthLanding() {
                                         <Typography variant="h4" className="auth-title">Create Account</Typography>
                                         {error && <Alert severity="error" className="auth-error">{error}</Alert>}
                                         <Box component="form" onSubmit={handleRegister}>
-                                            <TextField fullWidth label="Name" margin="normal" value={registerName} onChange={e => setRegisterName(e.target.value)} />
-                                            <TextField fullWidth label="Email" type="email" margin="normal" value={registerEmail} onChange={e => setRegisterEmail(e.target.value)} />
-                                            <TextField fullWidth label="Password" type="password" margin="normal" value={registerPassword} onChange={e => setRegisterPassword(e.target.value)} />
+                                            <TextField fullWidth label="Name" margin="normal"
+                                                value={registerName} onChange={e => setRegisterName(e.target.value)} />
+                                            <TextField fullWidth label="Email" type="email" margin="normal"
+                                                value={registerEmail} onChange={e => setRegisterEmail(e.target.value)} />
+                                            <TextField fullWidth label="Password" type="password" margin="normal"
+                                                value={registerPassword} onChange={e => setRegisterPassword(e.target.value)} />
                                             <Button fullWidth type="submit" className="auth-button">Create Account</Button>
                                         </Box>
                                         <Typography className="auth-footer">
@@ -147,9 +168,59 @@ export default function AuthLanding() {
                 </Box>
             </Box>
 
+            {/* HOW IT WORKS */}
+            <Box className="how-it-works">
+                <Typography variant="h4" className="section-title">How It Works</Typography>
+                <Box className="steps-grid">
+                    <Box className="step-card">
+                        <span className="step-icon">📝</span>
+                        <Typography variant="h6">1. Add Expenses</Typography>
+                        <Typography variant="body2">Log your bills and purchases in seconds.</Typography>
+                    </Box>
+                    <Box className="step-card">
+                        <span className="step-icon">🤝</span>
+                        <Typography variant="h6">2. Split Fairly</Typography>
+                        <Typography variant="body2">Our smart algorithm divides costs accurately.</Typography>
+                    </Box>
+                    <Box className="step-card">
+                        <span className="step-icon">✅</span>
+                        <Typography variant="h6">3. Settle Easily</Typography>
+                        <Typography variant="body2">Track balances & settle with one click.</Typography>
+                    </Box>
+                </Box>
+            </Box>
+
+            {/* TESTIMONIALS */}
+            <Box className="testimonials">
+                <Typography variant="h4" className="section-title">What Our Users Say</Typography>
+                <Box className="testimonial-card">
+                    <Typography>"This app ended all roommate money fights. Super easy!"</Typography>
+                    <Typography variant="subtitle2">– Sampath, Student</Typography>
+                </Box>
+                <Box className="testimonial-card">
+                    <Typography>"Finally a clean way to manage shared expenses."</Typography>
+                    <Typography variant="subtitle2">– Rohan, Professional</Typography>
+                </Box>
+            </Box>
+
+            {/* BOTTOM CTA */}
+            <Box className="bottom-cta">
+                <Typography variant="h4">Ready to simplify your expenses?</Typography>
+                <Button
+                    onClick={() => setActiveTab("register")}
+                    className="cta-button"
+                >
+                    Get Started Free
+                </Button>
+            </Box>
+
             {/* FOOTER */}
             <Box className="auth-footer-section">
-                <Typography variant="body2">&copy; 2025 RoomExpense Tracker. All rights reserved.</Typography>
+                <Typography variant="body2">
+                    &copy; 2025 RoomExpense Tracker. All rights reserved. |
+                    <Link href="#" className="footer-link"> About </Link>|
+                    <Link href="#" className="footer-link"> Privacy </Link>
+                </Typography>
             </Box>
         </Box>
     );
